@@ -1,1 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Budget Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Key Animations */
+        .animate-fade-in { animation: fadeIn 1s ease forwards; opacity: 0; }
+        .animate-slide-up { animation: slideUp 1s ease forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+        /* Neo-Brutalist Border and Shadow */
+        .neo-border { border: 4px solid #000; }
+        .custom-shadow { box-shadow: 8px 8px 0px #000; }
+
+        /* Button Hover Effect */
+        .hover-scale { transition: transform 0.2s ease; }
+        .hover-scale:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 to-purple-100 text-gray-900 font-sans min-h-screen flex items-center justify-center">
+    <!-- Container -->
+    <div class="max-w-lg w-full neo-border bg-yellow-100 text-black p-8 rounded-2xl custom-shadow animate-fade-in">
+        <!-- Hero Section Title -->
+        <h2 class="text-center text-5xl font-extrabold mb-8 text-gray-900 animate-slide-up">Budget Tracker</h2>
+        
+        <!-- User Selection Section -->
+        <div class="neo-border bg-yellow-200 p-6 rounded-xl shadow-lg space-y-6">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Select User</h3>
+            <div class="space-y-4">
+                {% for user in users %}
+                <a href="{{ url_for('dashboard', user_id=user.id) }}" 
+                   class="block neo-border border-black bg-yellow-300 text-black px-4 py-3 font-bold text-xl rounded-lg custom-shadow hover-scale transition-transform duration-200 ease-in-out">
+                    {{ user.username }}
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- Add New User Form -->
+            <div class="mt-8">
+                <h4 class="text-md font-semibold mb-2 text-gray-800">Add New User</h4>
+                <form id="newUserForm" class="space-y-3">
+                    <input type="text" name="username" placeholder="Username" required
+                           class="w-full neo-border border-black px-4 py-2 bg-yellow-50 rounded-lg shadow-inner placeholder-gray-700">
+                    <button type="submit" class="w-full neo-border bg-black text-white px-4 py-2 rounded-lg font-bold custom-shadow hover:bg-gray-800 hover-scale">
+                        Add User
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Form Submission -->
+    <script>
+        document.getElementById('newUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = e.target.username.value;
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username }),
+                });
+                if (response.ok) window.location.reload();
+            } catch (error) { console.error('Error:', error); }
+        });
+    </script>
+</body>
+</html>
